@@ -1,0 +1,761 @@
+---
+title: "Wine Quality Exploration by Laila Alqawain"
+output: html_document
+---
+===================================================
+
+```{r echo=FALSE, message=FALSE}
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library(GGally)
+```
+
+For This project I choosed The Wine Quality Dataset to explore and summarize the data to know what is the most effort on wine quality and which is color of wine that has more turnout, red wine or white wine.
+
+```{r echo=FALSE}
+# Load the Data
+wine <- read.csv("winequality.csv")
+```
+
+## Introduction
+This dataset has 6497 observations and 13 variables. Let's see the structures of variables.
+
+```{r echo=FALSE}
+dim(wine)
+```
+
+```{r echo=FALSE}
+# structure of dataset
+str(wine)
+```
+
+```{r echo=FALSE}
+# print five number summary
+summary(wine)
+```
+
+As we see from structure variables, the type of quality variable is an integer. I will Convert quality datatype into a factor categorical variable.
+
+```{r echo=FALSE}
+# Convert quality into ordered categorical variable
+wine$quality <- factor(wine$quality)
+str(wine)
+```
+
+As we see after converting, the quality variable has 7 level starting with 3 which is the lowest quality and 9 which is the best quality.
+
+Before creating plots, I will make functions and I will recall the function for every variable to create a plot and print five number summary.
+
+```{r echo=FALSE}
+# functions to polt univariate and produce five number summary for numrical variable
+Uni <- function(var, varname){
+print(summary(var))
+  
+  
+ggplot(data=wine , aes(x= var ))+
+    geom_histogram(bins = 30)+ggtitle(varname)+
+    xlab(varname) 
+}
+
+# functions to polt univariate and produce five number summary for the categorical variable
+Uni_bar <- function(var, varname){
+print(summary(var))
+  
+  
+ggplot(data= wine, aes(x= var ))+
+    geom_bar(bins = 30)+ggtitle(varname)+
+    xlab(varname)
+}
+```
+
+# Univariate Plots Section
+In this section, I will perform some preliminary exploration of
+wine quality dataset. I will describe the variables of the data. Then, I will create univariate plots to
+understand the structure of the individual variables in wine quality dataset.
+
+Description of attributes:
+
+   1 - fixed acidity: most acids involved with wine or fixed or nonvolatile (do not evaporate readily)
+
+   2 - volatile acidity: the amount of acetic acid in wine, which at too high of levels can lead to an unpleasant, vinegar taste
+
+   3 - citric acid: found in small quantities, citric acid can add 'freshness' and flavor to wines
+
+   4 - residual sugar: the amount of sugar remaining after fermentation stops, it's rare to find wines with less than 1 gram/liter and wines with greater than 45 grams/liter are considered sweet
+
+   5 - chlorides: the amount of salt in the wine
+
+   6 - free sulfur dioxide: the free form of SO2 exists in equilibrium between molecular SO2 (as a dissolved gas) and bisulfite ion; it prevents microbial growth and the oxidation of wine
+
+   7 - total sulfur dioxide: amount of free and bound forms of S02; in low concentrations, SO2 is mostly undetectable in wine, but at free SO2 concentrations over 50 ppm, SO2 becomes evident in the nose and taste of wine
+
+   8 - density: the density of water is close to that of water depending on the percent alcohol and sugar content
+
+   9 - pH: describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic); most wines are between 3-4 on the pH scale
+
+   10 - sulphates: a wine additive which can contribute to sulfur dioxide gas (S02) levels, wich acts as an antimicrobial and antioxidant
+
+   11 - alcohol: the percent alcohol content of the wine
+
+   Output variable (based on sensory data): 
+   12 - quality (score between 0 and 10)
+   
+As we mansion above, wine dataset contains 11 numerical variables and 2 categorical variables (quality and color).
+
+## Color
+```{r echo=FALSE}
+# Recall the uni_bar function
+library(ggplot2)
+Uni_bar(wine$color, "color")
+```
+
+From the bar plot above, we can see that the white wine is higher than the red wine. The wine quality dataset contains 4898 observations about white wine and 1599 observations about red wine.
+
+## Quality
+```{r echo=FALSE}
+# Recall the uni_bar function
+Uni_bar(wine$quality, "quality")
+```
+
+From the bar plot above, we can see that the quality level based on bar plot starting from level 3 to level 9. It looks like a normal distribution, there is one peak which is a level 6 of quality. Level 3 means the wine with the lowest quality and level 9 means the wine with the highest quality. Most of the wine with medium quality which is level 6.
+
+## Alcohol
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$alcohol, "alcohol")+ xlab("Alcohol(% by Volume)")
+
+```
+
+From the histogram above, we can see that the peak percent of alcohol in the wine between 9 and 10. This is the right skewed so, I will choose the median as a measure of center which is 10.30 instead of mean because the mean will be affected from the outliers as we see there is one outlier in 15.
+
+## Chlorides
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$chlorides, "chlorides")
+```
+
+From the histogram above, we can notice there is one peack in 0.02. It is the right skewed so, I will choose the median as a measure of center which is 0.047 instead of mean because the mean will be affected from the outliers as we see there are two outliers between 0.3 and 0.5.
+
+## Density 
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$density, "density")
+```
+
+From the histogram above, we can notice there is one peack below 1.00. It is the right skewed so, I will choose the median as a measure of center which is 0.99 instead of mean because the mean will be affected from the outliers as we see there is one outlier in 1.01. 
+
+## Citric Acid
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$citric.acid, "citric acid")
+```
+
+From the histogram above, we can notice there is one peack. It is the right skewed so, I will choose the median as a measure of center which is 0.31 instead of mean because the mean will be affected from the outliers as we see there is one outlier in 1.66 which is the max and didn't appear on the histogram.
+
+## Fixed Acidity
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$fixed.acidity, "fixed.acidity")
+```
+
+From the histogram above, we can notice there is one peack in 7.3. It is the right skewed so, I will choose the median as a measure of center which is 7.0 instead of mean because the mean will be affected from the outliers as we see there is one outlier in 15.9.
+
+## Free Sulfur Dioxide
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$free.sulfur.dioxide, "free sulfur dioxide")
+```
+
+From the histogram above, we can notice there is one peack. It is the right skewed so, I will choose the median as a measure of center which is 29.0 instead of mean because the mean will be affected from the outliers as we see there is one outlier which is the max 289.0 but we can't see it on the histogram.
+
+## pH
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$pH, "pH")
+```
+
+From the histogram above, we can notice that the ph of wine looks like a normal distribution. But actually it is right skewed because there is an outlier in 4.0. The most ph in wine is between 3 and 3.5. From the description of ph variable, pH describes how acidic or basic a wine is on a scale from 0 (very acidic) to 14 (very basic), most wines are between 3-4 on the pH scale. The median is 3.21.
+
+## Residual Sugar
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$residual.sugar, "residual sugar")+ xlab("residual sugar by g/dm^3")
+```
+
+From the histogram above, we can notice there is one peack. It is the right skewed so, I will choose the median as a measure of center which is 3.00 instead of mean because the mean will be affected from the outliers as we see there is one outlier which is the max 65.80 but we can't see it on the histogram.
+
+## Sulphates
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$sulphates, "sulphates")
+```
+
+From the histogram above, we can notice there is one peack in 0.4. It is the right skewed so, I will choose the median as a measure of center which is 0.51 instead of mean because the mean will be affected from the outliers as we see there are two outliers between 1.5 and 2.0.
+
+
+## Total Sulfur Dioxide
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$total.sulfur.dioxide, "total sulfur dioxide")
+```
+
+From the histogram above, we can notice there is one peack between 100 and 150. It is the left skewed so, I will choose the median as a measure of center which is 118.0 instead of mean because the mean will be affected from the outliers as we see there are two outliers in 350 and 440.
+
+## Volatile Acidity
+```{r echo=FALSE}
+# Recall the uni function
+Uni(wine$volatile.acidity, "volatile acidity")
+```
+
+From the histogram above, we can notice there is one peack in 0.2. It is the right skewed so, I will choose the median as a measure of center which is 0.29 instead of mean because the mean will be affected from the outliers as we see there are two outliers in 1.3 and the max which is 1.58 and it didn't appear on the histogram.
+
+# Univariate Analysis
+
+### What is the structure of your dataset?
+The structure of the Wine Quality dataset is that it contains 6497 observations of 13 variables. There are two categorical variables which are Color and Quality. The remaining variables are 12 numerical variables which are Alcohol, Chlorides, Citric Acid, Density, Fixed Acidity, Free Sulfur Dioxide, pH, Residual Sugar, Sulphates, Total Sulfur Dioxide, and Volatile Acidity.
+
+### What is/are the main feature(s) of interest in your dataset?
+There are two features that I interested in Wine Quality dataset which are Color and Quality.
+
+### What other features in the dataset do you think will help support your \ investigation into your feature(s) of interest?
+They are Alcohol, Chlorides, pH, density, total sulfur dioxide, and residual sugar. I will explore the dataset to find the distribution and the relationships between these variables and how they affect the quality and find the difference between each color of the wine based on these variables.
+
+### Did you create any new variables from existing variables in the dataset?
+No, I did not.
+
+### Of the features you investigated, were there any unusual distributions? \ Did you perform any operations on the data to tidy, adjust, or change the form \ of the data? If so, why did you do this?
+All shapes of distributions were right skewed for all variables except the shape of Total Sulfur Dioxide was left-skewed. I did not perform any operations on the dataset. I just would like to inform you that I chose the dataset which we worked on it before in the Term 1 and the change was that we merged the WineQuality_Red dataset with WineQuality_White dataset and made the color's column contains two values which are Red and White.
+
+
+# Bivariate Plots Section
+In this section, I will look forward to the relationships between the main output features and supporting variables Also, the relationships between the supporting variables together. I will make sub data from the wine dataset with 1000 sample and I'll choose the specific features that I would like to explore the relationships among them. 
+
+```{r echo=FALSE}
+# Create a subset data from wine dataset 
+# without these variabels
+# quality, color and citric.acid
+
+sub_wine <- subset(wine, select = -c(quality, color, citric.acid))
+#sub_wine <- wine[, 1:13]
+
+# Sample 1000 wines from the dataset
+set.seed(3000)
+wine_samp <- sub_wine[sample(nrow(sub_wine), 1000), ]
+
+#Create ggpairs plot for sub_wine variabels.
+library(GGally)
+ggcorr(wine_samp, label = TRUE, label_size = 3, label_round = 2, label_alpha = TRUE,hjust = 0.75, size = 3)
+#ggcorr(wine_samp)
+
+
+# altranative
+#Create ggpairs plot for sub_wine variabels.
+#ggpairs(data = wine_samp,
+      #  lower = list(continous = wrap("points", shape = I("."))),
+      #  upper = list(combo = wrap("box", outlier.shape = I(".")))) +
+ # theme(axis.text.x = element_text(angle = -30, size = 6, hjust = 0.2),
+       # axis.text.y = element_text(angle = 30, size = 6)) 
+```
+
+From pairs plot above, I can see the relationships and the correlations, the most are weak, a few are moderate and strong relationships. As we see the dark red means the strong relationship. Let's see by closer each relationship separately.  
+
+```{r echo=FALSE}
+# Scatter polt function 
+Bivariate <- function(var1, var2, varname, var1name, var2name){
+# Scatter polt
+ggplot(data= wine, aes(x=var1, y= var2 ))+
+       geom_point(alpha = (1/10), position = position_jitter(h=0))+geom_smooth(method='lm')+
+       ggtitle(varname)+xlab(var1name)+
+       ylab(var2name)
+}
+# Box plot function
+Bivariate_box <- function(var11, var22, varname, var1name, var2name){
+# Box polt
+ggplot(data= wine, aes_string(x=var11, y= var22 ))+
+       geom_boxplot()+ggtitle(varname)+xlab(var1name)+
+       ylab(var2name)
+}
+
+# Compute Pearson correlation
+correlation <- function(var1 , var2){
+cor(x = var1, y = var2)
+} 
+
+# Compute Spearman correlation for non numrical variables
+spear_correlation <- function(var1 , var2){
+cor(rank(var1), rank(var2))
+}  
+```
+
+## Quality vs. (pH, Alcohol, Chlorides, Density)
+```{r echo=FALSE}
+# Call Bivariate_box function
+
+p1 <- Bivariate_box(wine$quality, wine$pH, "quality vs. pH", "quality", "pH")
+
+p2 <- Bivariate_box(wine$quality, wine$alcohol, "quality vs. alcohol", "quality", "alcohol")+ylab("Alcohol(% by Volume)")
+
+p3 <- Bivariate_box(wine$quality, wine$chlorides, "quality vs. chlorides", "quality", "chlorides")
+
+p4 <- Bivariate_box(wine$quality, wine$density, "quality vs. density", "quality", "density")
+library(gridExtra)
+grid.arrange(p1,p2,p3,p4, ncol=2)
+```
+
+From box plots above, I notice the weak negative relationship between quality with chlorides and density. Also, the weak positive relationship with pH. The moderate positive relationship with alcohol. 
+Let's compute the r correlation to confirm that.
+?cor.test
+```{r echo=FALSE}
+# Compute r correlation
+# I used the Spearman method for non-numeric variables (quality)
+
+c1 <- cor.test(rank(wine$quality), rank(wine$pH), method='spearman')
+
+c2 <- cor.test(rank(wine$quality), rank(wine$alcohol), method='spearman')
+
+c3 <- cor.test(rank(wine$quality), rank(wine$chlorides), method='spearman')
+
+c4 <- cor.test(rank(wine$quality), rank(wine$density), method='spearman')
+?cor.test
+
+list(c1,c2,c3,c4)
+```
+
+As we said before, the weak positive relationship (quality ~ pH) = 0.03.
+The moderate positive relationship (quality ~ alcohol) = 0.44
+The weak negative relationship (quality ~ chlorides) = -0.29
+The weak ntgative relationship (quality ~ density) = -0.32
+
+## Color vs. pH
+```{r echo=FALSE}
+# Call Bivariate_box function
+Bivariate_box(wine$color, wine$pH, "color vs. pH", "color", "pH")
+```
+
+```{r echo=FALSE}
+# Call spearman correlation function
+spear_correlation(wine$color, wine$pH)
+```
+
+As we see from the boxplot above, we notice that the red wine is higher than white wine in pH. There are outliers in both colors and the correlation value is -0.33 and it means weak negative relationship among them.
+
+## Color vs. Alcohol
+```{r echo=FALSE}
+# Call Bivariate_box function
+Bivariate_box(wine$color, wine$alcohol, "color vs. alcohol", "color", "alcohol")+ylab("Alcohol(% by Volume)")
+```
+
+```{r echo=FALSE}
+# Call spearman correlation function
+spear_correlation(wine$color, wine$alcohol)
+```
+
+As we see from the boxplot above, we notice that the white wine is a little higher than red wine in alcohol percentage. There are outliers in red wine color and the correlation value is 0.01 and it means the relationship is almost non-existent.
+
+## Color vs. Chlorides
+```{r echo=FALSE}
+# Call Bivariate_box function
+Bivariate_box(wine$color, wine$chlorides, "color vs. chlorides", "color", "chlorides")
+```
+
+```{r echo=FALSE}
+# Call spearman correlation function
+spear_correlation(wine$color, wine$chlorides)
+```
+
+We can notice that the red wine is higher than white wine in percent of chlorides. There are outliers in both of them. The correlation is -0.66 and that means the strong negative relationship among them.
+
+## Color vs. Density
+```{r echo=FALSE}
+# Call Bivariate_box function
+Bivariate_box(wine$color, wine$density, "color vs. density", "color", "density")
+```
+
+```{r echo=FALSE}
+# Call spearman correlation function
+spear_correlation(wine$color, wine$density)
+```
+
+We can notice that the red wine is higher than white wine in density. There are 3 outliers values in white wine. The correlation is -0.408 and that means there is moderate negative relationship.
+
+## PH vs.Alcohol
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$pH, wine$alcohol, "pH vs. alcohol", "pH", "alcohol")+ ylab("Alcohol(% by Volume)")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$pH, wine$alcohol)
+```
+
+From scatter plot above, We can notice that is weak positive relationship between pH and alcohol. The correlation is 0.12 and that confirms what we see.
+
+## Alcohol vs. Chlorides
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$alcohol,wine$chlorides,  "alcohol vs. chlorides","alcohol", "chlorides")+ xlab("Alcohol(% by Volume)")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$alcohol, wine$chlorides)
+```
+
+From scatter plot above, We can notice that is weak negative relationship between alcohol and chlorides. The correlation is -0.25 and that confirms what we see.
+
+## Chlorides vs. PH 
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$chlorides,wine$pH,  "chlorides vs. pH","chlorides", "pH")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$chlorides, wine$pH)
+```
+
+From scatter plot above, We can notice that is very weak positive relationship between chlorides and pH. The correlation is 0.04 and it means the relationship is almost non-existent. This makes sense. so the wine contains the equaled percent of ph and chlorides.
+
+
+## Density vs. Alcohol
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$density,wine$alcohol,  "density vs. alcohol","density", "alcohol")+ ylab("Alcohol(% by Volume)")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$density, wine$alcohol)
+```
+
+From scatter plot above, We can notice that is very strong negative relationship between density and alcohol. The correlation is -0.68 and that confirms what we see.
+
+## Total Sulfur Dioxide vs. Residual Sugar
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$total.sulfur.dioxide,wine$residual.sugar,"total sulfur dioxide vs. residual.sugar","total sulfur dioxide", "residual sugar") + ylab("residual sugar by g/dm^3")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$total.sulfur.dioxide, wine$residual.sugar)
+```
+
+From scatter plot above, We can notice that is moderate positive relationship between total sulfur dioxide and residual sugar. The correlation is 0.45 and that confirms what we see.
+
+## Residual Sugar vs. Density
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$residual.sugar,wine$density,"residual sugar vs. density","residual sugar", "density")+ xlab("residual sugar by g/dm^3")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$residual.sugar, wine$density)
+```
+
+From scatter plot above, We can notice that is moderate positive relationship between residual sugar and density. The correlation is 0.55 and that confirms what we see.
+
+## Total Sulfur Dioxide vs. Free Sulfur Dioxide
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$total.sulfur.dioxide,wine$free.sulfur.dioxide,"total sulfur dioxide vs. free sulfur dioxide","total sulfur dioxide", "free sulfur dioxide")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$total.sulfur.dioxide, wine$free.sulfur.dioxide)
+```
+From scatter plot above, We can notice that is strong positive relationship between total sulfur dioxide and free sulfur dioxide. The correlation is 0.72 and that confirms what we see.
+
+## Total Sulfur Dioxide vs. Volatile Acidity
+```{r echo=FALSE}
+# Call Bivariate function
+Bivariate(wine$total.sulfur.dioxide,wine$volatile.acidity,"total sulfur dioxide vs. volatile acidity","total sulfur dioxide", "volatile acidity")
+```
+
+```{r echo=FALSE}
+# Call pearson correlation function
+correlation(wine$total.sulfur.dioxide, wine$volatile.acidity)
+```
+
+From scatter plot above, We can notice that is moderate negative relationship between total sulfur dioxide and volatile acidity. The correlation is -0.41 and that confirms what we see.
+
+# Bivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \ investigation. How did the feature(s) of interest vary with other features in \ the dataset?
+I found the most relationships were weak and some were moderate and few were strong, some of them:
+- Density correlated strongly with alcohol, the higher density cause the less alcohol. It was strong negative relation and the correlation = -0.68 ~ -0.7.
+- Total sulfur dioxide correlated moderately with residual sugar. It was moderate negative relation and the correlation = 0.49 ~ 0.5.
+- Alcohol correlated weakly with chlorides. It was weak negative related and the correlation = -0.25 ~ -0.3.
+- Quality correlated weakly with pH. It was a weak positive relation and the correlation = 0.11.
+- PH correlated weakly with alcohol. It was a weak positive relation and the correlation = 0.12.
+- Residual sugar correlated moderately with density. It was moderate positive related and the correlation = 0.52.
+
+### Did you observe any interesting relationships between the other features \ (not the main feature(s) of interest)?
+Yes, I did. I found the strong relationship between two features that i didn't expect. Total sulfur dioxide correlated strongly with free sulfur dioxide, the higher total sulfur dioxide cause the higher free sulfur dioxide. It was strong positive relationship and the correlation = 0.72.
+
+### What was the strongest relationship you found?
+The relationship between Total sulfur dioxide and free sulfur dioxide was the strongest relationship that I found.
+
+
+# Multivariate Plots Section
+In this section, I would like to explore which color of wine had higher in some variables vs. others variabels. I will do create some dataframes and calculate the mean and the median instead of all values and will be more clear for evaluation.
+
+## Median of PH over Alcohol for each Color
+```{r echo=FALSE}
+# Create dataframe, contains
+# information on alcohol AND color group
+#    mean of pH,
+#    median of pH,
+#    n (the count of each number of alcohol in each color grouping)
+
+wine.ph_by_alcohol_color <- wine %>% 
+  filter(!is.na(color)) %>%
+  group_by(alcohol, color) %>%
+  summarise(mean_ph = mean(pH),
+            median_ph = median(pH),
+            n=n())
+head(wine.ph_by_alcohol_color)
+```
+
+```{r  echo=FALSE }
+# Create a scatter graph showing the
+# median of pH over the alcohol
+# for each color. 
+# I used the data frame I just created,
+# wine.ph_by_alcohol_color
+
+
+ggplot(aes(alcohol, median_ph), data = wine.ph_by_alcohol_color) +
+  geom_point(aes(color=color)) + geom_smooth(method='lm') + xlab("Alcohol(% by Volume)")+ ggtitle("Median of PH over Alcohol for each Color")
+```
+
+As we see from the scatter plot, the red wine is higher than the white wine in alcohol and the higher pH. there is one peak for red wine. In both of wines, alcohol and pH had decreased.
+
+## Median of Chlorides over Alcohol for each Color
+```{r echo=FALSE}
+
+# Create dataframe, contains
+# information on alcohol AND color group
+#    mean of chlorides,
+#    median of chlorides,
+#    n (the count of each number of alcohol in each color grouping)
+
+wine.chlorides_by_alcohol_color <- wine %>% 
+  filter(!is.na(color)) %>%
+  group_by(alcohol, color) %>%
+  summarise(mean_chlorides = mean(chlorides),
+            median_chlorides = median(chlorides),
+            n=n())
+head(wine.chlorides_by_alcohol_color)
+```
+
+
+```{r echo=FALSE}
+# Create a point graph showing the
+# median of pH over the alcohol
+# for each color. 
+# I used the data frame I just created,
+# wine.chlorides_by_alcohol_color
+
+ggplot(aes(alcohol, median_chlorides), data = wine.chlorides_by_alcohol_color) +
+  geom_point(aes(color=color)) + geom_smooth(method='lm') + xlab("Alcohol(% by Volume)")+ ggtitle("Median of Chlorides over Alcohol for each Color")
+```
+As we see from the scatter plot, the relationship is weakly negative as we saw in the previous section. There is a rise between the red wine and the white wine in alcohol and the median of chlorides, there is one peak for red wine. 
+
+## Median of Total Sulfur Dioxide over Free Sulfur Dioxide for each Color
+```{r echo=FALSE}
+# Create dataframe, contains
+# information on free sulfur dioxide AND color group
+#    mean of total sulfur dioxide,
+#    median of total sulfur dioxide,
+#    n (the count of each number of free sulfur dioxide in each color grouping)
+
+wine.total_by_free_color <- wine %>% 
+  filter(!is.na(color)) %>%
+  group_by(free.sulfur.dioxide, color) %>%
+  summarise(mean_total_sulfur_dioxide = mean(total.sulfur.dioxide),
+            median_total_sulfur_dioxide = median(total.sulfur.dioxide),
+            n=n())
+head(wine.total_by_free_color)
+```
+
+
+```{r echo=FALSE}
+# Create a point graph showing the
+# median of total sulfur dioxide over the free sulfur dioxide
+# for each color. 
+# I used the data frame I just created,
+# wine.total_by_free_color
+
+ggplot(aes(free.sulfur.dioxide, median_total_sulfur_dioxide), data = wine.total_by_free_color) +
+  geom_point(aes(color=color))+ geom_smooth(method='lm') + ggtitle("Median of Total Sulfur Dioxide over Free Sulfur Dioxide for each Color")
+```
+
+As we see from the scatter plot, The relationship is very strongly positive and that confirms what we saw before. A rise for the white wine on red wine in free sulfur dioxide vs. the median of total sulfur dioxide. They meet in the same peak approximately. The white wine continuous to rise, but the red wine line stopped. I think that based on the dataset that has more information about white wine.
+
+## Median of Density over Quality for each Color
+```{r echo=FALSE}
+
+# Create dataframe, contains
+# information on quality AND color group
+#    mean of density,
+#    median of density,
+#    n (the count of each number of quality in each color grouping)
+
+wine.den_by_qua_color <- wine %>% 
+  filter(!is.na(color)) %>%
+  group_by(quality, color) %>%
+  summarise(mean_density = mean(density),
+            median_density = median(density),
+            n=n())
+head(wine.den_by_qua_color)
+```
+
+```{r echo=FALSE}
+
+# Create a point graph showing the
+# median of density over the quality
+# for each color. 
+# I used the data frame I just created,
+# wine.den_by_qua_color
+
+ggplot(aes(quality, median_density), data = wine.den_by_qua_color) +
+  geom_point(aes(color=color)) + geom_smooth(method='lm') + ggtitle("Median of Density over Quality for each Color")
+
+```
+
+As we see from the scatter plot, the relationship is weakly negative as we confirmed that before. A rise of red wine on the white wine in the median of density vs. quality. That means the red wine is more quality and has more density than the white wine although the observations number of red wine is very lower than the observations number of white wine in wine dataset.
+
+# Multivariate Analysis
+
+### Talk about some of the relationships you observed in this part of the \ investigation. Were there features that strengthened each other in terms of \ looking at your feature(s) of interest?
+I found the same relationship between the featuer that I explored in the perviouse section, but here I can confirm which color of wine is higher that another one. I found the red wine is higher than the white wine except in this relationship (Median of Total Sulfur Dioxide vs. Free Sulfur Dioxide). So, the remind relationships such as (Median of Chlorides vs. Alcohol, Median of Chlorides vs. Alcohol and Median of Density vs. Quality ) the red wine was higher than the white wine.
+
+### Were there any interesting or surprising interactions between features?
+Yes, there were. Although of the red wine observations are very lower than white wine observations only the red wine was significantly higher. One of interested is the relationship between density vs. quality. It was weakly negative relation and the red wine was higher than white wine.
+
+------
+
+# Final Plots and Summary
+
+### Plot One
+
+### Distribution of Wine Quality
+```{r echo=FALSE}
+# Create bar plot for quality
+
+ggplot(wine, aes(x=quality))+
+  geom_bar( fill="steelblue")+
+  theme_minimal()+
+ # scale_x_continuous(breaks = seq(2,10,1), limits = c(2,10))+
+#  scale_y_continuous(breaks = seq(0,3000,500), limits = c(0,3000))+
+  xlab("Quality")+
+  ylab("Number of Quality")+
+  ggtitle("Distribution of Wine Quality")
+ 
+
+ 
+```
+
+```{r echo=FALSE}
+# Create two bar plots for quality and facet warp by color of wine.
+ggplot(wine, aes(x=quality))+
+  geom_bar( fill="steelblue")+
+  theme_minimal()+
+ # scale_x_continuous(breaks = seq(2,10,1), limits = c(2,10))+
+#  scale_y_continuous(breaks = seq(0,3000,500), limits = c(0,3000))+
+  xlab("Quality")+
+  ylab("Number of Quality")+
+  ggtitle("Distribution of Wine Quality by Color of Wine")+
+  facet_wrap(~color)
+```
+
+### Description One
+
+The level of quality from 0 to 10, based on wine dataset the minimum level is 3 (low quality) and the maximum level is 9 (high quality). based on bar plot above, we can see the most wines were ranked as 6 then 5. It looks like a normal distribution.
+Based on Distribution of Wine Quality bar plots, we notice the peak of white wine is 6(medium quality), but the peak of red wine is 5(medium quality). They look like the same quality, I think the highest which we see in white wine is due to the number of observations about white wine. The dataset has 4898 observations about whit wine and just 1599 observations about red wine.
+
+### Plot Two
+
+### Alcohol vs. pH
+```{r echo=FALSE}
+# Call Bivariate function
+
+Bivariate(wine$pH, wine$alcohol, "pH vs. alcohol", "pH", "alcohol")+  ylab("Alcohol(% by Volume)")
+```
+
+
+```{r echo=FALSE}
+# Creat scatter blot for alcohol vs. pH by color
+ggplot(data= wine, aes(x=wine$pH, y= wine$alcohol, shape = color ))+
+       geom_point(alpha = (1/5), position = position_jitter(h=0))+
+       geom_smooth(method=lm, aes(fill=wine$color))+
+       ggtitle("Alcohol vs. pH")+xlab("PH")+
+       ylab("Alcohol(% by Volume)")
+
+```
+
+### Description Two
+From scatter plot above, We can notice that is a weak positive relationship between pH and alcohol in both colors of wine. we can see the line of red wine is longer and higher than white wine. It means the red wine has a little more alcohol and more density. As we mentioned before the correlation (alcohol ~ density)= 0.12.
+
+
+### Plot Three
+
+### Median of Chlorides over Alcohol for each Color
+```{r echo=FALSE}
+# Creat line plot for Median of Chlorides over Alcohol for each Color of wine
+ggplot(aes(alcohol, median_chlorides), data = wine.chlorides_by_alcohol_color) +
+  geom_point(aes(color=color),linetype=5) + 
+  geom_smooth(method='lm') + xlab("Alcohol(% by Volume)")+
+  ggtitle("Median of Chlorides over Alcohol for each Color")
+```
+
+### Description Three
+As we see from the line plot above, the relationship is weakly negative as we saw in the previous section. The red wine line is above the white wine line. Then, both of them decreased. In the end, the red wine line rose. It means chlorides and alcohol in red wine are higher than in white wine. Also, we can see the one peak in red wine line.
+
+------
+
+# Reflection
+The wine quality dataset contains 6497 observations and 13 variables two of them categorical variables(quality and color). I explored the dataset to find the distribution and the relationships between these variables and how they affect the quality and find the difference between each color of the wine based on these variables.
+
+I found all shapes of distributions were right skewed for all variables except the shape of Total Sulfur Dioxide was left-skewed. Choosing this dataset was a challenge for me.  I made sub data from the wine dataset with 1000 sample and selected the specific features to explore the relationships among them.
+
+I found the most relationships were weak and some were moderate and few were strong, some of them:
+- Density correlated strongly with alcohol, the higher density cause the less alcohol. It was strong negative relation and the correlation = -0.68 ~ -0.7.
+- Total sulfur dioxide correlated moderately with residual sugar. It was moderate negative relation and the correlation = 0.49 ~ 0.5.
+- Alcohol correlated weakly with chlorides. It was weak negative related and the correlation = -0.25 ~ -0.3.
+- Quality correlated weakly with pH. It was a weak positive relation and the correlation = 0.11.
+- PH correlated weakly with alcohol. It was a weak positive relation and the correlation = 0.12.
+- Residual sugar correlated moderately with density. It was moderate positive related and the correlation = 0.52.
+
+I found the strong relationship between two features that I didn't expect. Total sulfur dioxide correlated strongly with free sulfur dioxide, the higher total sulfur dioxide cause the higher free sulfur dioxide. It was a strong positive relationship and the correlation = 0.72. The relationship between Total sulfur dioxide and free sulfur dioxide was the strongest relationship that I found.
+
+I created some data frames and calculated the mean and the median instead of all values to be more clear for evaluation which color of wine had higher in some variables vs. others variables. After that, I found the same relationship between the features that I explored in the previous section, but here I can confirm which color of the wine is higher than another one. I found the red wine is higher than the white wine except in this relationship (Median of Total Sulfur Dioxide vs. Free Sulfur Dioxide). So, the remind relationships such as (Median of Chlorides vs. Alcohol, Median of Chlorides vs. Alcohol and Median of Density vs. Quality ) the red wine was higher than the white wine.
+
+Although of the red wine observations are very lower than white wine observations only the red wine was significantly higher. One of interested is the relationship between density vs. quality. It was weakly negative relation and the red wine was higher than white wine.
+
+======================================================
+
+# Resources
+
+- https://stackoverflow.com/questions/46384546/how-to-find-correlation-coefficients-for-non-numeric-variables
+
+- http://www.flutterbys.com.au/stats/tut/tut5.3.html
+
+- https://stats.idre.ucla.edu/r/faq/frequently-asked-questions-about-rhow-can-i-subset-a-data-setthe-r-program-as-a-text-file-for-all-the-code-on-this-page-subsetting-is-a-very-important-component/
+
+- https://www.udemy.com/r-programming/learn/v4/t/lecture/4636948?start=90
+
+- https://www.udemy.com/r-programming/learn/v4/t/lecture/4721378?start=0
+
+- https://support.rstudio.com/hc/en-us/articles/200549016-Customizing-RStudio#editing
+
+- https://briatte.github.io/ggcorr/
+
+- http://www.sthda.com/english/wiki/ggplot2-scatter-plots-quick-start-guide-r-software-and-data-visualization
+
+
